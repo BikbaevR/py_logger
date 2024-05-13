@@ -5,12 +5,12 @@ import os
 
 class Logger:
 
-    # _instance = None
-    #
-    # def __new__(cls):
-    #     if cls._instance is None:
-    #         cls._instance = super().__new__(cls)
-    #     return cls._instance
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self, log_file_name: str = ''):
         date = datetime.now().strftime('%d_%m_%Y')
@@ -18,6 +18,7 @@ class Logger:
         self.__message = '',
         self.__date_time = datetime.now()
         self.__file_name = inspect.stack()[1].filename
+
     @staticmethod
     def __create_directory_if_not_exists(dir_path: str):
         if not os.path.exists(dir_path):
