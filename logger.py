@@ -11,11 +11,11 @@ class Logger:
         self.__date_time = datetime.now()
         self.__file_name = inspect.stack()[1].filename
 
-        self.logger_enable: bool = False
-        self.info_enable: bool = False
-        self.debug_enable: bool = False
-        self.error_enable: bool = False
-        self.warning_enable: bool = False
+        self.__logger_enable: bool = False
+        self.__info_enable: bool = False
+        self.__debug_enable: bool = False
+        self.__error_enable: bool = False
+        self.__warning_enable: bool = False
 
         self.__config_file_read()
 
@@ -46,18 +46,18 @@ class Logger:
                     key, value = rest_of_string.split('=')
                     match key:
                         case 'logger_enable':
-                            self.logger_enable = True if value.strip() == 'True' else False
+                            self.__logger_enable = True if value.strip() == 'True' else False
                         case 'info_enable':
-                            self.info_enable = True if value.strip() == 'True' else False
+                            self.__info_enable = True if value.strip() == 'True' else False
                         case 'debug_enable':
-                            self.debug_enable = True if value.strip() == 'True' else False
+                            self.__debug_enable = True if value.strip() == 'True' else False
                         case 'error_enable':
-                            self.error_enable = True if value.strip() == 'True' else False
+                            self.__error_enable = True if value.strip() == 'True' else False
                         case 'warning_enable':
-                            self.warning_enable = True if value.strip() == 'True' else False
+                            self.__warning_enable = True if value.strip() == 'True' else False
 
     def __write(self, log_type: str):
-        if self.logger_enable:
+        if self.__logger_enable:
             self.__create_directory_if_not_exists(f'log')
 
             with open(f'log\\{self.__log_file_name}.log', 'a', encoding='utf-8') as file:
@@ -65,21 +65,21 @@ class Logger:
                 file.close()
 
     def debug(self, message: str):
-        if self.debug_enable:
+        if self.__debug_enable:
             self.__message = message
             self.__write(f'DEBUG')
 
     def info(self, message: str):
-        if self.info_enable:
+        if self.__info_enable:
             self.__message = message
             self.__write(f'INFO ')
 
     def error(self, message: str):
-        if self.error_enable:
+        if self.__error_enable:
             self.__message = message
             self.__write(f'ERROR')
 
     def warning(self, message: str):
-        if self.warning_enable:
+        if self.__warning_enable:
             self.__message = message
             self.__write(f'WARNING')
