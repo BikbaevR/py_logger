@@ -4,14 +4,6 @@ import os
 
 
 class Logger:
-
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
     def __init__(self, log_file_name: str = ''):
         date = datetime.now().strftime('%d_%m_%Y')
         self.__log_file_name = f"log_{date}" if len(log_file_name) <= 0 else f"{log_file_name}_{date}"
