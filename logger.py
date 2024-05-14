@@ -11,27 +11,75 @@ class Logger:
         self.__date_time = datetime.now()
         self.__file_name = inspect.stack()[1].filename
 
+        self.logger_enable: bool = False
+        self.info_enable: bool = False
+        self.debug_enable: bool = False
+        self.error_enable: bool = False
+        self.warning_enable: bool = False
+
+        self.__config_file_read()
+
     @staticmethod
     def __create_directory_if_not_exists(dir_path: str):
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-    def __write(self, log_type: str):
-        self.__create_directory_if_not_exists(f'log')
+    @staticmethod
+    def __config_file_create():
+        file = 'logger.conf'
+        if not os.path.isfile(file):
+            with open(file, 'a', encoding='utf-8') as conf:
+                conf.write(f"#logger_enable=True \n")
+                conf.write(f"#info_enable=True \n")
+                conf.write(f"#debug_enable=True \n")
+                conf.write(f"#error_enable=True \n")
+                conf.write(f"#warning_enable=True \n")
+                conf.close()
 
-        with open(f'log\\{self.__log_file_name}.log', 'a', encoding='utf-8') as file:
-            file.writelines(f"[{log_type}] [{self.__file_name}] [{self.__date_time}] - {self.__message} \n")
-            file.close()
+    def __config_file_read(self):
+        self.__config_file_create()
+        with open('logger.conf', 'r', encoding='utf-8') as conf:
+            lines = conf.readlines()
+            for line in lines:
+                if line.startswith('#'):
+                    rest_of_string = line[1:-1:]
+                    key, value = rest_of_string.split('=')
+                    match key:
+                        case 'logger_enable':
+                            self.logger_enable = True if value.strip() == 'True' else False
+                        case 'info_enable':
+                            self.info_enable = True if value.strip() == 'True' else False
+                        case 'debug_enable':
+                            self.debug_enable = True if value.strip() == 'True' else False
+                        case 'error_enable':
+                            self.error_enable = True if value.strip() == 'True' else False
+                        case 'warning_enable':
+                            self.warning_enable = True if value.strip() == 'True' else False
+
+    def __write(self, log_type: str):
+        if self.logger_enable:
+            self.__create_directory_if_not_exists(f'log')
+
+            with open(f'log\\{self.__log_file_name}.log', 'a', encoding='utf-8') as file:
+                file.writelines(f"[{log_type}] [{self.__file_name}] [{self.__date_time}] - {self.__message} \n")
+                file.close()
 
     def debug(self, message: str):
-        self.__message = message
-        self.__write(f'DEBUG')
+        if self.debug_enable:
+            self.__message = message
+            self.__write(f'DEBUG')
 
     def info(self, message: str):
-        self.__message = message
-        self.__write(f'INFO')
+        if self.info_enable:
+            self.__message = message
+            self.__write(f'INFO ')
 
     def error(self, message: str):
-        self.__message = message
-        self.__write(f'ERROR')
+        if self.error_enable:
+            self.__message = message
+            self.__write(f'ERROR')
 
+    def warning(self, message: str):
+        if self.warning_enable:
+            self.__message = message
+            self.__write(f'WARNING')
